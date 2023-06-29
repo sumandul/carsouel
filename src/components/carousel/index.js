@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
@@ -12,7 +12,7 @@ import "swiper/css/scrollbar";
 // import "swiper/modules/pagination/pagination.scss";
 const SwiperSlideContainer = styled.div`
   width: 100%;
-  height: 100%;
+  height: 300px;
 `;
 const PP = styled(Swiper)`
   position: relative;
@@ -33,12 +33,45 @@ const Button = styled.button`
 
   /* Add any other custom styles */
 `;
-// const Conatiner = styled.btn_container`
-//   background-color: red;
-//   /* Add any other custom styles */
-// `;
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  position: absolute;
+  top: -18%;
+  right: 0%;
+  z-index: 999;
+  @media (max-width: 320px) {
+    top: -21% !important;
+  }
+  @media (max-width: 480px) {
+    top: -20% !important;
+  }
+  @media (min-width: 1024px) {
+    top: -21% !important;
+  }
+  @media (max-width: 1500px) {
+    top: -30%;
+  }
+`;
 
-const Carousel = () => {
+const Carousel = ({ image }) => {
+  console.log(image);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+  console.log(isBeginning, isEnd);
+
+  const handleSlideChange = () => {
+    setIsBeginning(swiperRef.current?.isBeginning);
+    setIsEnd(swiperRef.current?.isEnd);
+  };
+
+  const handlePrev = () => {
+    swiperRef.current?.slidePrev();
+  };
+
+  const handleNext = () => {
+    swiperRef.current?.slideNext();
+  };
   const swiperRef = useRef();
   return (
     <div style={{ position: "relative" }}>
@@ -46,74 +79,53 @@ const Carousel = () => {
         breakpoints={{
           100: { slidesPerView: 1, spaceBetween: 80 },
           320: { slidesPerView: 1, spaceBetween: 80 },
-          480: { slidesPerView: 1, spaceBetween: 15 },
-          768: { slidesPerView: 2, spaceBetween: 50 },
+          480: { slidesPerView: 2, spaceBetween: 10 },
+          768: { slidesPerView: 3, spaceBetween: 15 },
           1024: { slidesPerView: 4, spaceBetween: 15 },
+          1200: { slidesPerView: 4, spaceBetween: 15 },
         }}
         modules={[Pagination, Navigation]}
         spaceBetween={20}
         slidesPerView={4}
-        onSwiper={(swiper) => console.log(swiper)}
-        onSlideChange={() => console.log("slide change")}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
+          setIsBeginning(swiper.isBeginning);
+          setIsEnd(swiper.isEnd);
+        }}
+        onSlideChange={handleSlideChange}
         onBeforeInit={(swiper) => {
           swiperRef.current = swiper;
         }}
       >
-        <SwiperSlide>
-          {" "}
-          <SwiperSlideContainer>
-            <StyledImage src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80" />
-          </SwiperSlideContainer>
-        </SwiperSlide>
-        <SwiperSlide>
-          {" "}
-          <SwiperSlideContainer>
-            <StyledImage src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80" />
-          </SwiperSlideContainer>
-        </SwiperSlide>
-        <SwiperSlide>
-          {" "}
-          <SwiperSlideContainer>
-            <StyledImage src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80" />
-          </SwiperSlideContainer>
-        </SwiperSlide>
-        <SwiperSlide>
-          {" "}
-          <SwiperSlideContainer>
-            <StyledImage src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80" />
-          </SwiperSlideContainer>
-        </SwiperSlide>
-        <SwiperSlide>
-          {" "}
-          <SwiperSlideContainer>
-            <StyledImage src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80" />
-          </SwiperSlideContainer>
-        </SwiperSlide>
-        <SwiperSlide>
-          {" "}
-          <SwiperSlideContainer>
-            <StyledImage src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80" />
-          </SwiperSlideContainer>
-        </SwiperSlide>
+        {image.map((item, i) => {
+          return (
+            <SwiperSlide key={i}>
+              <SwiperSlideContainer>
+                <StyledImage src={item.image} />
+              </SwiperSlideContainer>
+            </SwiperSlide>
+          );
+        })}
       </PP>
-      <div
-        className="btn_container"
-        style={{
-          display: "flex",
-          gap: "20px",
-          position: "absolute",
-          top: "-18%",
-          right: "0%",
-          zIndex: 999,
-        }}
-      >
-        <Button onClick={() => swiperRef.current?.slidePrev()}>
-          <MdArrowBackIosNew />
-        </Button>
-        <Button onClick={() => swiperRef.current?.slideNext()}>
-          <MdArrowForwardIos />
-        </Button>
-      </div>
+      <ButtonContainer>
+        {!isBeginning && (
+          <Button
+            onClick={() => swiperRef.current?.slidePrev()}
+            disabled={isBeginning}
+          >
+            <MdArrowBackIosNew />
+          </Button>
+        )}
+
+        {!isEnd && (
+          <Button
+            onClick={() => swiperRef.current?.slideNext()}
+            disabled={isEnd}
+          >
+            <MdArrowForwardIos />
+          </Button>
+        )}
+      </ButtonContainer>
     </div>
   );
 };
